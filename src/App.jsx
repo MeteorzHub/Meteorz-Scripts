@@ -9,7 +9,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function App() {
   const [user, setUser] = useState(null)
-  const [page, setPage] = useState('landing') // landing, login, post, profile
+  const [page, setPage] = useState('landing')
   const [scripts, setScripts] = useState([])
   const [search, setSearch] = useState('')
 
@@ -67,7 +67,6 @@ export default function App() {
     const handleSignup = async () => {
       const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) return setMessage(error.message)
-      // Create user profile with username
       await supabase.from('users').insert([{ id: data.user.id, username, email }])
       setMessage('✅ Signed up! Check your email to confirm.')
     }
@@ -78,29 +77,32 @@ export default function App() {
         <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
         <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
         <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 mt-2">
           <button className="bg-white text-black px-3 py-1 rounded" onClick={handleLogin}>Login</button>
           <button className="bg-white text-black px-3 py-1 rounded" onClick={handleSignup}>Sign Up</button>
         </div>
-        <p>{message}</p>
+        <p className="mt-2">{message}</p>
       </div>
     )
   }
 
+  // --- SCRIPT CARD COMPONENT ---
+  const ScriptCard = ({ s }) => (
+    <div className="bg-gray-900 border-2 border-white rounded-xl shadow-lg p-4 flex flex-col">
+      {s.image_url && <img src={s.image_url} alt="Script" className="w-full max-h-40 object-cover rounded mb-2" />}
+      <h2 className="font-bold text-xl">{s.title}</h2>
+      {s.game && <span className="bg-white text-black px-2 py-1 rounded-full text-sm mt-1">{s.game}</span>}
+      <pre className="bg-black p-2 rounded whitespace-pre-wrap mt-2 flex-1">{s.code}</pre>
+      <button className="copy-btn mt-2 bg-white text-black px-2 py-1 rounded self-end" onClick={() => copyToClipboard(s.code)}>Copy 📋</button>
+    </div>
+  )
+
   // --- LANDING PAGE ---
   const LandingPage = () => (
     <div className="p-6">
-      <input placeholder="Search scripts..." className="p-2 text-black w-full mb-4" value={search} onChange={e => setSearch(e.target.value)} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {scripts.map(s => (
-          <div key={s.id} className="card p-4 flex flex-col items-start">
-            {s.image_url && <img src={s.image_url} alt="Script" className="w-full max-h-40 object-cover rounded mb-2" />}
-            <h2 className="font-bold text-xl">{s.title}</h2>
-            {s.game && <p className="italic text-gray-300">Game: {s.game}</p>}
-            <pre className="bg-black p-2 rounded whitespace-pre-wrap w-full">{s.code}</pre>
-            <button className="copy-btn mt-2" onClick={() => copyToClipboard(s.code)}>Copy Script 📋</button>
-          </div>
-        ))}
+      <input placeholder="Search scripts..." className="p-2 text-black w-full mb-4 rounded" value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {scripts.map(s => <ScriptCard key={s.id} s={s} />)}
       </div>
     </div>
   )
@@ -122,14 +124,14 @@ export default function App() {
     }
 
     return (
-      <div className="p-6 max-w-md mx-auto">
+      <div className="p-6 max-w-md mx-auto flex flex-col">
         <h2 className="text-2xl font-bold mb-4">Post a Script</h2>
         <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
         <textarea placeholder="Code" value={code} onChange={e => setCode(e.target.value)} />
         <input placeholder="Game (optional)" value={game} onChange={e => setGame(e.target.value)} />
         <input placeholder="Image URL (optional)" value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
-        <button className="bg-white text-black px-3 py-1 rounded" onClick={handlePost}>Post Script</button>
-        <p>{message}</p>
+        <button className="bg-white text-black px-3 py-1 rounded mt-2" onClick={handlePost}>Post Script</button>
+        <p className="mt-2">{message}</p>
       </div>
     )
   }
@@ -152,18 +154,23 @@ export default function App() {
     }, [user])
 
     return (
-      <div className="p-6 max-w-md mx-auto">
+      <div className="p-6 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Profile</h2>
-        <p>Username: {username}</p>
-        {avatar && <img src={avatar} alt="Avatar" className="w-24 h-24 rounded-full my-2" />}
-        <h3 className="font-bold mt-4">Your Scripts</h3>
-        {userScripts.map(s => (
-          <div key={s.id} className="card p-2 mb-2">
-            <h4 className="font-bold">{s.title}</h4>
-            <pre className="whitespace-pre-wrap">{s.code}</pre>
-            <button className="copy-btn mt-1" onClick={() => copyToClipboard(s.code)}>Copy Script 📋</button>
-          </div>
-        ))}
+        <p className="text-lg">Username: {username}</p>
+        {avatar && <img src={avatar} alt="Avatar" className{avatar && <img src={avatar} alt="Avatar" className="w-24 h-24 rounded-full my-2" />}
+        <h3 className="font-bold mt-4 text-xl">Your Scripts</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          {userScripts.map(s => (
+            <div key={s.id} className="bg-gray-900 border-2 border-white rounded-xl shadow-lg p-4 flex flex-col">
+              {s.image_url && <img src={s.image_url} alt="Script" className="w-full max-h-40 object-cover rounded mb-2" />}
+              <h4 className="font-bold text-lg">{s.title}</h4>
+              {s.game && <span className="bg-white text-black px-2 py-1 rounded-full text-sm mt-1">{s.game}</span>}
+              <pre className="bg-black p-2 rounded whitespace-pre-wrap mt-2 flex-1">{s.code}</pre>
+              <button className="copy-btn mt-2 bg-white text-black px-2 py-1 rounded self-end" onClick={() => copyToClipboard(s.code)}>Copy 📋</button>
+            </div>
+          ))}
+          {userScripts.length === 0 && <p className="mt-4">You haven't posted any scripts yet.</p>}
+        </div>
       </div>
     )
   }
@@ -177,4 +184,5 @@ export default function App() {
       {page === 'profile' && <ProfilePage user={user} />}
     </div>
   )
-                                                                }
+}
+                     
