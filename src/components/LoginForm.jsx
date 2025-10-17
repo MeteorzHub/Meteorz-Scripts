@@ -7,24 +7,22 @@ export default function LoginForm() {
   const [message, setMessage] = useState('')
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setMessage(error.message)
-    else setMessage('Logged in!')
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    setMessage(error ? error.message : '✅ Logged in!')
   }
 
   const handleSignup = async () => {
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) setMessage(error.message)
-    else setMessage('Check your email to confirm signup!')
+    const { error } = await supabase.auth.signUp({ email, password })
+    setMessage(error ? error.message : '✅ Check your email to confirm signup!')
   }
 
   return (
-    <div className="mb-4">
-      <input className="p-2 text-black rounded" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="password" className="p-2 text-black rounded" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+    <div className="mb-6">
+      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
       <div>
-        <button className="bg-blue-600 p-2 m-1 rounded" onClick={handleLogin}>Login</button>
-        <button className="bg-green-600 p-2 m-1 rounded" onClick={handleSignup}>Sign Up</button>
+        <button className="bg-white text-black m-1" onClick={handleLogin}>Login</button>
+        <button className="bg-white text-black m-1" onClick={handleSignup}>Sign Up</button>
       </div>
       <p>{message}</p>
     </div>
