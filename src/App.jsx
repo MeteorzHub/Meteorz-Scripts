@@ -157,7 +157,8 @@ export default function App() {
       <div className="p-6 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Profile</h2>
         <p className="text-lg">Username: {username}</p>
-        {avatar && <img src={avatar} alt="Avatar" className{avatar && <img src={avatar} alt="Avatar" className="w-24 h-24 rounded-full my-2" />}
+        {avatar && <img src={avatar} alt="Avatar" className
+                     {avatar && <img src={avatar} alt="Avatar" className="w-24 h-24 rounded-full my-2" />}
         <h3 className="font-bold mt-4 text-xl">Your Scripts</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
           {userScripts.map(s => (
@@ -185,4 +186,3 @@ export default function App() {
     </div>
   )
 }
-                     
